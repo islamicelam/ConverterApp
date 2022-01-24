@@ -10,7 +10,7 @@ import com.example.converter.databinding.ActivityMainBinding
 import com.example.converter.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-//]
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 

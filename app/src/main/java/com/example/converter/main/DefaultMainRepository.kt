@@ -1,5 +1,6 @@
 package com.example.converter.main
 
+import android.util.Log
 import com.example.converter.data.CurrencyAPI
 import com.example.converter.data.models.CurrencyResponse
 import com.example.converter.util.Resource
@@ -12,9 +13,10 @@ class DefaultMainRepository @Inject constructor(
 
     override suspend fun getRates(base: String): Resource<CurrencyResponse> {
         return try {
-            val response = api.getRates(base)
+            val response = api.getRates(base, "4ada570e341cb085c060e6b49d4a1edf")
             val result = response.body()
             if (response.isSuccessful && result != null) {
+                //Log.d(TAG, "getRates: ")
                 Resource.Success(result)
             } else {
                 Resource.Error(response.message())
@@ -23,4 +25,5 @@ class DefaultMainRepository @Inject constructor(
             Resource.Error(e.message ?: "An error occurred")
         }
     }
+
 }

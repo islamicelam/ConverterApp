@@ -1,15 +1,16 @@
 package com.example.converter.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.converter.data.models.Rates
 import com.example.converter.util.DispatcherProvider
 import com.example.converter.util.Resource
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -42,10 +43,13 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch(dispatchers.io) {
             _conversion.value = CurrencyEvent.Loading
+            Log.d("TAG", "rates response: ${Gson().toJson(repository.getRates(fromCurrency))}")
             when(val ratesResponse = repository.getRates(fromCurrency)) {
                 is Resource.Error -> _conversion.value = CurrencyEvent.Failure(ratesResponse.message!!)
                 is Resource.Success -> {
                     val rates = ratesResponse.data!!.rates
+//                    Log.d("TAG", "convert: " + Gson().toJson(rates))
+//                    Log.d("TAG", "convert: $rates")
                     val rate = getRateForCurrency(toCurrency, rates)
                     if(rate == null) {
                         _conversion.value = CurrencyEvent.Failure("Unexpected error")
