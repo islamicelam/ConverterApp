@@ -3,7 +3,7 @@ package com.example.converter.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.converter.data.models.Rates
+import com.example.converter.data.models.Data
 import com.example.converter.util.DispatcherProvider
 import com.example.converter.util.Resource
 import com.google.gson.Gson
@@ -40,6 +40,9 @@ class MainViewModel @Inject constructor(
             _conversion.value = CurrencyEvent.Failure("Not a valid amount")
             return
         }
+        Log.d("TAG", "to currency: $toCurrency")
+        Log.d("TAG", "from currency: $fromCurrency")
+
 
         viewModelScope.launch(dispatchers.io) {
             _conversion.value = CurrencyEvent.Loading
@@ -47,9 +50,7 @@ class MainViewModel @Inject constructor(
             when(val ratesResponse = repository.getRates(fromCurrency)) {
                 is Resource.Error -> _conversion.value = CurrencyEvent.Failure(ratesResponse.message!!)
                 is Resource.Success -> {
-                    val rates = ratesResponse.data!!.rates
-//                    Log.d("TAG", "convert: " + Gson().toJson(rates))
-//                    Log.d("TAG", "convert: $rates")
+                    val rates = ratesResponse.data!!.data
                     val rate = getRateForCurrency(toCurrency, rates)
                     if(rate == null) {
                         _conversion.value = CurrencyEvent.Failure("Unexpected error")
@@ -64,44 +65,35 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun getRateForCurrency(currency: String, rates: Rates) = when (currency) {
+    private fun getRateForCurrency(currency: String, rates: Data) = when (currency) {
              "AED" -> rates.AED
              "AFN" -> rates.AFN
-             "AMD" -> rates.AMD
              "ALL" -> rates.ALL
-             "ANG" -> rates.ANG
+             "AMD" -> rates.AMD
              "AOA" -> rates.AOA
              "ARS" -> rates.ARS
              "AUD" -> rates.AUD
-             "AWG" -> rates.AWG
              "AZN" -> rates.AZN
-             "BAM" -> rates.BAM
-             "BBD" -> rates.BBD
              "BDT" -> rates.BDT
              "BGN" -> rates.BGN
              "BHD" -> rates.BHD
              "BIF" -> rates.BIF
-             "BMD" -> rates.BMD
+             "BIH" -> rates.BIH
              "BND" -> rates.BND
              "BOB" -> rates.BOB
              "BRL" -> rates.BRL
              "BSD" -> rates.BSD
              "BTC" -> rates.BTC
-             "BTN" -> rates.BTN
              "BWP" -> rates.BWP
-             "BYN" -> rates.BYN
              "BYR" -> rates.BYR
-             "BZD" -> rates.BZD
              "CAD" -> rates.CAD
              "CDF" -> rates.CDF
              "CHF" -> rates.CHF
-             "CLF" -> rates.CLF
              "CLP" -> rates.CLP
              "CNY" -> rates.CNY
              "COP" -> rates.COP
              "CRC" -> rates.CRC
              "CUC" -> rates.CUC
-             "CUP" -> rates.CUP
              "CVE" -> rates.CVE
              "CZK" -> rates.CZK
              "DJF" -> rates.DJF
@@ -111,31 +103,27 @@ class MainViewModel @Inject constructor(
              "EGP" -> rates.EGP
              "ERN" -> rates.ERN
              "ETB" -> rates.ETB
+             "ETH" -> rates.ETH
              "EUR" -> rates.EUR
              "FJD" -> rates.FJD
-             "FKP" -> rates.FKP
              "GBP" -> rates.GBP
              "GEL" -> rates.GEL
-             "GGP" -> rates.GGP
              "GHS" -> rates.GHS
-             "GIP" -> rates.GIP
              "GMD" -> rates.GMD
              "GNF" -> rates.GNF
              "GTQ" -> rates.GTQ
              "GYD" -> rates.GYD
              "HKD" -> rates.HKD
              "HNL" -> rates.HNL
-             "HRK" -> rates.HRK
+             "HRV" -> rates.HRV
              "HTG" -> rates.HTG
              "HUF" -> rates.HUF
              "IDR" -> rates.IDR
              "ILS" -> rates.ILS
-             "IMP" -> rates.IMP
              "INR" -> rates.INR
              "IQD" -> rates.IQD
              "IRR" -> rates.IRR
              "ISK" -> rates.ISK
-             "JEP" -> rates.JEP
              "JMD" -> rates.JMD
              "JOD" -> rates.JOD
              "JPY" -> rates.JPY
@@ -143,9 +131,7 @@ class MainViewModel @Inject constructor(
              "KGS" -> rates.KGS
              "KHR" -> rates.KHR
              "KMF" -> rates.KMF
-             "KPW" -> rates.KPW
              "KRW" -> rates.KRW
-             "KWD" -> rates.KWD
              "KYD" -> rates.KYD
              "KZT" -> rates.KZT
              "LAK" -> rates.LAK
@@ -153,8 +139,7 @@ class MainViewModel @Inject constructor(
              "LKR" -> rates.LKR
              "LRD" -> rates.LRD
              "LSL" -> rates.LSL
-             "LTL" -> rates.LTL
-             "LVL" -> rates.LVL
+             "LTC" -> rates.LTC
              "LYD" -> rates.LYD
              "MAD" -> rates.MAD
              "MDL" -> rates.MDL
@@ -163,7 +148,6 @@ class MainViewModel @Inject constructor(
              "MMK" -> rates.MMK
              "MNT" -> rates.MNT
              "MOP" -> rates.MOP
-             "MRO" -> rates.MRO
              "MUR" -> rates.MUR
              "MVR" -> rates.MVR
              "MWK" -> rates.MWK
@@ -190,49 +174,12 @@ class MainViewModel @Inject constructor(
              "RUB" -> rates.RUB
              "RWF" -> rates.RWF
              "SAR" -> rates.SAR
-             "SBD" -> rates.SBD
              "SCR" -> rates.SCR
              "SDG" -> rates.SDG
              "SEK" -> rates.SEK
              "SGD" -> rates.SGD
-             "SHP" -> rates.SHP
              "SLL" -> rates.SLL
              "SOS" -> rates.SOS
-             "SRD" -> rates.SRD
-             "STD" -> rates.STD
-             "SVC" -> rates.SVC
-             "SYP" -> rates.SYP
-             "SZL" -> rates.SZL
-             "THB" -> rates.THB
-             "TJS" -> rates.TJS
-             "TMT" -> rates.TMT
-             "TND" -> rates.TND
-             "TOP" -> rates.TOP
-             "TRY" -> rates.TRY
-             "TTD" -> rates.TTD
-             "TWD" -> rates.TWD
-             "TZS" -> rates.TZS
-             "UAH" -> rates.UAH
-             "UGX" -> rates.UGX
-             "USD" -> rates.USD
-             "UYU" -> rates.UYU
-             "UZS" -> rates.UZS
-             "VEF" -> rates.VEF
-             "VND" -> rates.VND
-             "VUV" -> rates.VUV
-             "WST" -> rates.WST
-             "XAF" -> rates.XAF
-             "XAG" -> rates.XAG
-             "XAU" -> rates.XAU
-             "XCD" -> rates.XCD
-             "XDR" -> rates.XDR
-             "XOF" -> rates.XOF
-             "XPF" -> rates.XPF
-             "YER" -> rates.YER
-             "ZAR" -> rates.ZAR
-             "ZMK" -> rates.ZMK
-             "ZMW" -> rates.ZMW
-             "ZWL" -> rates.ZWL
              else -> null
     }
 }
